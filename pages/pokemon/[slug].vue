@@ -29,6 +29,9 @@ const query = gql`
         }
         typePokemon {
           nom
+          couleur {
+            hex
+          }
           image {
             url
           }
@@ -47,12 +50,7 @@ const query = gql`
       updatedAt
       stage
       image {
-        url(
-          transformation: {
-            image: { resize: { fit: crop, height: 1024, width: 1024 } }
-            document: { output: { format: webp } }
-          }
-        )
+        url(transformation: { document: { output: { format: webp } } })
       }
       shiny {
         url
@@ -101,12 +99,12 @@ onMounted(() => {
 <template>
   <div class="bg-slate-200 rounded-xl">
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 justify-items-center"
+      class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 2xl:grid-cols-2 justify-items-center p-10"
     >
       <div v-if="pokemon" class="space-y-4 max-w-xl">
-        <div class="flex justify-between">
+        <div class="flex justify-between col-start-2">
           <div class="flex items-center space-x-3">
-            <h2 class="font-bold text-3xl pb-2">{{ pokemon.nom }}</h2>
+            <h2 class="font-bold text-40xl pb-2">{{ pokemon.nom }}</h2>
             <h3 class="font-semibold">Numéro Pokedex</h3>
 
             <p>{{ pokemon.numeroPokedex }}</p>
@@ -116,7 +114,7 @@ onMounted(() => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-8"
+                class="h-8 fill-pink-500"
               >
                 <path
                   d="M11 15.9339C7.33064 15.445 4.5 12.3031 4.5 8.5C4.5 4.35786 7.85786 1 12 1C16.1421 1 19.5 4.35786 19.5 8.5C19.5 12.3031 16.6694 15.445 13 15.9339V18H18V20H13V24H11V20H6V18H11V15.9339ZM12 14C15.0376 14 17.5 11.5376 17.5 8.5C17.5 5.46243 15.0376 3 12 3C8.96243 3 6.5 5.46243 6.5 8.5C6.5 11.5376 8.96243 14 12 14Z"
@@ -128,7 +126,7 @@ onMounted(() => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-8"
+                class="h-8 fill-blue-500"
               >
                 <path
                   d="M15.0491 8.53666L18.5858 5H14V3H22V11H20V6.41421L16.4633 9.95088C17.4274 11.2127 18 12.7895 18 14.5C18 18.6421 14.6421 22 10.5 22C6.35786 22 3 18.6421 3 14.5C3 10.3579 6.35786 7 10.5 7C12.2105 7 13.7873 7.57264 15.0491 8.53666ZM10.5 20C13.5376 20 16 17.5376 16 14.5C16 11.4624 13.5376 9 10.5 9C7.46243 9 5 11.4624 5 14.5C5 17.5376 7.46243 20 10.5 20Z"
@@ -139,7 +137,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="grid justify-items-center">
+        <div class="grid justify-items-center h-auto">
           <NuxtImg
             :src="pokemon.image.url"
             :alt="pokemon.nom"
@@ -182,9 +180,9 @@ onMounted(() => {
           </button>
         </div>
 
-        <div id="div1" class="grid grid-cols-6">
-          <div v-if="pokemon.attaques" class="p-4 col-start-1 col-span-5">
-            <h3 class="font-semibold text-xl pb-4">Attaques :</h3>
+        <div id="div1">
+          <div v-if="pokemon.attaques" class="p-4 xl:pr-24">
+            <h3 class="font-semibold text-2xl pb-4">Attaques :</h3>
             <div>
               <ul class="">
                 <li
@@ -197,18 +195,23 @@ onMounted(() => {
                       class="border-l-2 pl-4"
                       :style="{ borderColor: pokemon.couleur.hex }"
                     >
-                      <p class="font-semibold">
-                        {{ attaque.nom }}
-                      </p>
-                      <p>
-                        {{ attaque.description }}
-                      </p>
-                      <div class="flex space-x-4 items-center justify-end">
-                        <p class="font-medium">
+                      <div
+                        class="flex space-x-4 items-center justify-between pr-4"
+                      >
+                        <p class="font-semibold text-lg">
+                          {{ attaque.nom }}
+                        </p>
+                        <p class="font-medium text-sm">
                           Dégât
                           {{ attaque.degat }}
                         </p>
-                        <div v-if="attaque.typeAttaque" class="space-x-2">
+                        <!-- <div
+                          class="border-2 h-12 w-24"
+                          :style="{
+                            borderColor: attaque.typePokemon.couleur.hex,
+                          }"
+                        ></div> -->
+                        <!-- <div v-if="attaque.typeAttaque" class="space-x-2">
                           <NuxtImg
                             :src="attaque.typePokemon.image.url"
                             :alt="attaque.typePokemon.nom"
@@ -217,8 +220,11 @@ onMounted(() => {
                         </div>
                         <div v-else>
                           <p>Pas d'image disponible</p>
-                        </div>
+                        </div> -->
                       </div>
+                      <p>
+                        {{ attaque.description }}
+                      </p>
                     </div>
                   </div>
                 </li>
@@ -229,14 +235,14 @@ onMounted(() => {
         <div id="div2" class="hidden">
           <div class="flex">
             <div class="" v-if="pokemon.zoneMap">
+              <p class="font-semibold text-xl py-4">
+                {{ pokemon.zoneMap.nom }}
+              </p>
               <NuxtImg
                 :src="pokemon.zoneMap.image.url"
                 :alt="pokemon.zoneMap.nom"
-                class="rounded-lg h-64"
+                class="rounded-lg"
               />
-              <p class="font-semibold">
-                {{ pokemon.zoneMap.nom }}
-              </p>
             </div>
           </div>
         </div>

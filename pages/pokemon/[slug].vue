@@ -53,10 +53,10 @@ const query = gql`
         url(transformation: { document: { output: { format: webp } } })
       }
       shiny {
-        url
+        url(transformation: { document: { output: { format: webp } } })
       }
       sprite {
-        url
+        url(transformation: { document: { output: { format: webp } } })
       }
     }
   }
@@ -249,20 +249,20 @@ onMounted(() => {
         <div id="div3" class="hidden">
           <div class="flex" v-if="pokemon">
             <div class="">
+              <p class="font-semibold">Basique</p>
               <NuxtImg
                 :src="pokemon.sprite.url"
                 :alt="pokemon.nom"
                 class="h-auto"
               />
-              <p class="font-semibold">Basique</p>
             </div>
             <div class="">
+              <p class="font-semibold">Shiny</p>
               <NuxtImg
                 :src="pokemon.shiny.url"
                 :alt="pokemon.nom"
                 class="h-auto"
               />
-              <p class="font-semibold">Shiny</p>
             </div>
           </div>
         </div>

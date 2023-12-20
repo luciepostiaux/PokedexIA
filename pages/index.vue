@@ -55,13 +55,18 @@ const filteredAndSortedPokemons = computed(() => {
 
   if (selectedSort.value === "numeroPokedex") {
     result.sort((a, b) => a.id - b.id);
-  } else if (selectedSort.value === "alphabetical") {
+  } else if (
+    selectedSort.value === "alphabetical" &&
+    selectedType.value !== "all"
+  ) {
     result.sort((a, b) => a.nom.localeCompare(b.nom));
+    result = result.filter((p) =>
+      p.typesPokemon.some((t) => t.nom === selectedType.value)
+    );
   } else if (selectedType.value !== "all") {
     result = result.filter((p) =>
       p.typesPokemon.some((t) => t.nom === selectedType.value)
     );
-    console.log();
   }
 
   return result;

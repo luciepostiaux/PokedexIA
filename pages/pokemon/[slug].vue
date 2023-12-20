@@ -12,15 +12,6 @@ const query = gql`
       male
       femelle
       numeroPokedex
-      typesPokemon {
-        nom
-        couleur {
-          hex
-        }
-        image {
-          url(transformation: { document: { output: { format: webp } } })
-        }
-      }
 
       couleur {
         hex
@@ -33,7 +24,7 @@ const query = gql`
         typeAttaque {
           nom
           image {
-            url(transformation: { document: { output: { format: webp } } })
+            url
           }
         }
         typePokemon {
@@ -42,7 +33,7 @@ const query = gql`
             hex
           }
           image {
-            url(transformation: { document: { output: { format: webp } } })
+            url
           }
         }
       }
@@ -50,7 +41,7 @@ const query = gql`
       zoneMap {
         nom
         image {
-          url(transformation: { document: { output: { format: webp } } })
+          url
         }
       }
 
@@ -62,10 +53,10 @@ const query = gql`
         url(transformation: { document: { output: { format: webp } } })
       }
       shiny {
-        url(transformation: { document: { output: { format: webp } } })
+        url
       }
       sprite {
-        url(transformation: { document: { output: { format: webp } } })
+        url
       }
     }
   }
@@ -106,54 +97,43 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-slate-200 rounded-xl">
+  <div class="bg-[#F2F2F2] rounded-xl p-10">
     <div
-      class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2 justify-items-center p-10"
+      class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 2xl:grid-cols-2 justify-items-center"
     >
       <div v-if="pokemon" class="space-y-4 max-w-xl">
         <div class="flex justify-between col-start-2">
-          <div class="flex items-center space-x-2">
-            <div v-if="pokemon.typesPokemon" class="flex">
-              <div
-                v-for="type in pokemon.typesPokemon"
-                :key="type.nom"
-                class=""
-              >
-                <NuxtImg :src="type.image.url" :alt="type.nom" class="w-12" />
-              </div>
-              <h2 class="font-bold text-3xl pb-2">{{ pokemon.nom }}</h2>
-            </div>
-            <div class="flex">
-              <h3 class="font-semibold text-sm">Nº</h3>
+          <div class="flex items-center space-x-3">
+            <h2 class="font-bold text-4xl pb-2">{{ pokemon.nom }}</h2>
+            <h3 class="font-semibold">Numéro Pokedex</h3>
 
-              <p class="text-sm">{{ pokemon.numeroPokedex }}</p>
-            </div>
+            <p>{{ pokemon.numeroPokedex }}</p>
           </div>
           <div class="flex space-x-5">
             <div class="flex items-center space-x-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-6 fill-pink-500"
+                class="h-8 fill-pink-500"
               >
                 <path
                   d="M11 15.9339C7.33064 15.445 4.5 12.3031 4.5 8.5C4.5 4.35786 7.85786 1 12 1C16.1421 1 19.5 4.35786 19.5 8.5C19.5 12.3031 16.6694 15.445 13 15.9339V18H18V20H13V24H11V20H6V18H11V15.9339ZM12 14C15.0376 14 17.5 11.5376 17.5 8.5C17.5 5.46243 15.0376 3 12 3C8.96243 3 6.5 5.46243 6.5 8.5C6.5 11.5376 8.96243 14 12 14Z"
                 ></path>
               </svg>
-              <h2 class="">{{ pokemon.femelle }}</h2>
+              <h2 class="text-xl">{{ pokemon.femelle }}</h2>
             </div>
             <div class="flex items-center space-x-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-6 fill-blue-500"
+                class="h-8 fill-blue-500"
               >
                 <path
                   d="M15.0491 8.53666L18.5858 5H14V3H22V11H20V6.41421L16.4633 9.95088C17.4274 11.2127 18 12.7895 18 14.5C18 18.6421 14.6421 22 10.5 22C6.35786 22 3 18.6421 3 14.5C3 10.3579 6.35786 7 10.5 7C12.2105 7 13.7873 7.57264 15.0491 8.53666ZM10.5 20C13.5376 20 16 17.5376 16 14.5C16 11.4624 13.5376 9 10.5 9C7.46243 9 5 11.4624 5 14.5C5 17.5376 7.46243 20 10.5 20Z"
                 ></path>
               </svg>
 
-              <h2 class="">{{ pokemon.male }}</h2>
+              <h2 class="text-xl">{{ pokemon.male }}</h2>
             </div>
           </div>
         </div>
@@ -245,26 +225,9 @@ onMounted(() => {
                           <p>Pas d'image disponible</p>
                         </div> -->
                       </div>
-                      <div
-                        class="flex items-start justify-between space-x-4 w-full"
-                      >
-                        <p class="w-5/6">
-                          {{ attaque.description }}
-                        </p>
-                        <div
-                          v-if="attaque.typeAttaque"
-                          class="self-end flex-shrink-0"
-                        >
-                          <NuxtImg
-                            :src="attaque.typeAttaque.image.url"
-                            :alt="attaque.typeAttaque.nom"
-                            class="w-10"
-                          />
-                        </div>
-                        <div v-else>
-                          <p>Pas d'image disponible</p>
-                        </div>
-                      </div>
+                      <p>
+                        {{ attaque.description }}
+                      </p>
                     </div>
                   </div>
                 </li>
@@ -287,22 +250,22 @@ onMounted(() => {
           </div>
         </div>
         <div id="div3" class="hidden">
-          <div class="flex justify-center space-x-8" v-if="pokemon">
-            <div class="w-1/3">
-              <p class="font-semibold text-center pb-4">Basique</p>
+          <div class="flex" v-if="pokemon">
+            <div class="">
               <NuxtImg
                 :src="pokemon.sprite.url"
                 :alt="pokemon.nom"
-                class="h-auto w-full"
+                class="h-auto"
               />
+              <p class="font-semibold">Basique</p>
             </div>
-            <div class="w-1/3">
-              <p class="font-semibold text-center pb-4">Shiny</p>
+            <div class="">
               <NuxtImg
                 :src="pokemon.shiny.url"
                 :alt="pokemon.nom"
-                class="h-auto w-full"
+                class="h-auto"
               />
+              <p class="font-semibold">Shiny</p>
             </div>
           </div>
         </div>

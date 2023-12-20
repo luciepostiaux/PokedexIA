@@ -1,11 +1,11 @@
 <template>
-  <div class="h-screen">
-    <nav class="container mx-auto  h-24 flex items-center">
+  <div class="h-screen bg-[#F2F2F2] space-y-4">
+    <nav class="container mx-auto h-auto flex items-center justify-center">
       <NuxtLink to="/">
-        <h1 class="text-5xl">Pokedex</h1>
+        <img src="/images/logo.png" class="h-32 items-center" />
       </NuxtLink>
     </nav>
-    <div class="container mx-auto px-3">
+    <div class="container mx-auto px-4 bg-red-600 p-4 rounded-lg shadow-lg">
       <slot />
     </div>
   </div>

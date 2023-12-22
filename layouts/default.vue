@@ -5,7 +5,7 @@
         <img src="/images/logo.png" class="h-32 items-center" />
       </NuxtLink>
     </nav>
-    <div class="container mx-auto px-4 bg-red-600 p-4 rounded-lg shadow-lg">
+    <div class="container mx-auto px-4 bg-[#82CBC4] p-4 rounded-lg shadow-lg">
       <slot />
     </div>
   </div>

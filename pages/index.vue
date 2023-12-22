@@ -49,28 +49,25 @@ if (data.value) {
   pokemons.value = data.value.pokemons;
 }
 const filteredAndSortedPokemons = computed(() => {
-  let result = pokemons.value.filter((pokemon) =>
+  let result = pokemons.value.filter(
+    (pokemon) =>
+      selectedType.value === "all" ||
+      pokemon.typesPokemon.some((t) => t.nom === selectedType.value)
+  );
+
+  result = result.filter((pokemon) =>
     pokemon.nom.toLowerCase().includes(searchTerm.value.toLowerCase())
   );
 
   if (selectedSort.value === "numeroPokedex") {
-    result.sort((a, b) => a.id - b.id);
-  } else if (
-    selectedSort.value === "alphabetical" &&
-    selectedType.value !== "all"
-  ) {
+    result.sort((a, b) => a.numeroPokedex - b.numeroPokedex);
+  } else if (selectedSort.value === "alphabetical") {
     result.sort((a, b) => a.nom.localeCompare(b.nom));
-    result = result.filter((p) =>
-      p.typesPokemon.some((t) => t.nom === selectedType.value)
-    );
-  } else if (selectedType.value !== "all") {
-    result = result.filter((p) =>
-      p.typesPokemon.some((t) => t.nom === selectedType.value)
-    );
   }
 
   return result;
 });
+
 const selectedType = ref("all");
 const selectedSort = ref("id");
 </script>
@@ -101,33 +98,35 @@ const selectedSort = ref("id");
       </div>
     </div>
 
-    <ul
-      v-if="filteredAndSortedPokemons"
-      class="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7"
-    >
-      <li
-        v-for="pokemon in filteredAndSortedPokemons"
-        :key="pokemon.id"
-        class="bg-[#F2F2F2] rounded-lg shadow-lg p-4 flex items-center justify-center size-"
+    <div class="pr-4 overflow-y-scroll">
+      <ul
+        v-if="filteredAndSortedPokemons"
+        class="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8"
       >
-        <NuxtLink
-          :to="`/pokemon/${pokemon.slug}`"
-          class="flex flex-col items-center"
+        <li
+          v-for="pokemon in filteredAndSortedPokemons"
+          :key="pokemon.id"
+          class="bg-gray-200 p-4 rounded-lg shadow-lg hover:shadow-sm hover:bg-gray-300 transform hover:scale-95 transition duration-150 ease-in-out"
         >
-          <div class="size-24 flex items-center justify-center">
-            <NuxtImg
-              :src="pokemon.sprite.url"
-              :alt="pokemon.nom"
-              class="max-w-full max-h-full object-contain"
-            />
-          </div>
-          <h2 class="text-xl font-bold mt-2">{{ pokemon.nom }}</h2>
-          <p class="text-gray-700">{{ pokemon.numeroPokedex }}</p>
-        </NuxtLink>
-      </li>
-    </ul>
-    <ul v-else>
-      <li>Loading...</li>
-    </ul>
+          <NuxtLink
+            :to="`/pokemon/${pokemon.slug}`"
+            class="flex flex-col items-center"
+          >
+            <div class="size-24 flex items-center justify-center">
+              <NuxtImg
+                :src="pokemon.sprite.url"
+                :alt="pokemon.nom"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <h2 class="text-xl font-bold mt-2">{{ pokemon.nom }}</h2>
+            <p class="text-gray-700">{{ pokemon.numeroPokedex }}</p>
+          </NuxtLink>
+        </li>
+      </ul>
+      <ul v-else>
+        <li>Loading...</li>
+      </ul>
+    </div>
   </div>
 </template>

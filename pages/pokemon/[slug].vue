@@ -16,6 +16,20 @@ const query = gql`
       couleur {
         hex
       }
+      typesPokemon {
+        couleur {
+          hex
+        }
+        nom
+        image {
+          url(
+            transformation: {
+              image: { resize: {} }
+              document: { output: { format: webp } }
+            }
+          )
+        }
+      }
       attaques {
         nom
         description
@@ -24,7 +38,7 @@ const query = gql`
         typeAttaque {
           nom
           image {
-            url
+            url(transformation: { document: { output: { format: webp } } })
           }
         }
         typePokemon {
@@ -33,7 +47,7 @@ const query = gql`
             hex
           }
           image {
-            url
+            url(transformation: { document: { output: { format: webp } } })
           }
         }
       }
@@ -53,257 +67,222 @@ const query = gql`
         url(transformation: { document: { output: { format: webp } } })
       }
       shiny {
-        url
+        url(transformation: { document: { output: { format: webp } } })
       }
       sprite {
-        url
+        url(transformation: { document: { output: { format: webp } } })
       }
     }
   }
 `;
 
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+
 const pokemon = ref();
+const activeTab = ref("attaques");
 
 const route = useRoute();
 const { data } = await useAsyncQuery(query, {
   slug: route.params.slug,
 });
 
-console.log(data.value);
 pokemon.value = data.value.pokemon;
 
-onMounted(() => {
-  function hideAllDivs() {
-    document.getElementById("div1").classList.add("hidden");
-    document.getElementById("div2").classList.add("hidden");
-    document.getElementById("div3").classList.add("hidden");
-  }
-
-  document.getElementById("btn1").addEventListener("click", () => {
-    hideAllDivs();
-    document.getElementById("div1").classList.remove("hidden");
-  });
-
-  document.getElementById("btn2").addEventListener("click", () => {
-    hideAllDivs();
-    document.getElementById("div2").classList.remove("hidden");
-  });
-
-  document.getElementById("btn3").addEventListener("click", () => {
-    hideAllDivs();
-    document.getElementById("div3").classList.remove("hidden");
-  });
-});
+function setActiveTab(tabName) {
+  activeTab.value = tabName;
+}
 </script>
 
 <template>
-  <div class="bg-[#F2F2F2] rounded-xl p-10">
-    <div
-      class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 2xl:grid-cols-2 justify-items-center"
-    >
-      <div v-if="pokemon" class="space-y-4 max-w-xl">
-        <div class="flex justify-between col-start-2">
-          <div class="flex items-center space-x-3">
-            <h2 class="font-bold text-4xl pb-2">{{ pokemon.nom }}</h2>
-            <h3 class="font-semibold">Numéro Pokedex</h3>
+  <div class="bg-white rounded-xl p-10 shadow-lg max-w-4xl mx-auto">
+    <div v-if="pokemon" class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+      <div class="flex justify-center md:block hidden self-center">
+        <NuxtImg
+          :src="pokemon.image.url"
+          :alt="pokemon.nom"
+          class="rounded-lg border-4 h-64 w-64 object-cover"
+          :style="{ borderColor: pokemon.couleur.hex }"
+        />
+      </div>
+      <div class="md:col-span-2 space-y-4">
+        <div
+          class="flex flex-col md:flex-row justify-between items-start md:items-center"
+        >
+          <div class="flex items-center space-x-2">
+            <h2 class="font-bold text-3xl md:text-4xl">{{ pokemon.nom }}</h2>
+            <p class="text-gray-800">nº {{ pokemon.numeroPokedex }}</p>
 
-            <p>{{ pokemon.numeroPokedex }}</p>
+            <div class="flex space-x-2">
+              <img
+                v-for="(type, index) in pokemon.typesPokemon"
+                :key="index"
+                :src="type.image.url"
+                :alt="type.nom"
+                class="h-8 w-8 md:h-10 md:w-10 object-cover"
+              />
+            </div>
           </div>
-          <div class="flex space-x-5">
-            <div class="flex items-center space-x-2">
+          <div class="flex justify-center block md:hidden w-80 h-auto py-4">
+            <NuxtImg
+              :src="pokemon.image.url"
+              :alt="pokemon.nom"
+              class="rounded-lg border-4 object-cover"
+              :style="{ borderColor: pokemon.couleur.hex }"
+            />
+          </div>
+          <div class="flex space-x-5 mt-2 md:mt-0">
+            <div class="flex items-center space-x-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-8 fill-pink-500"
+                class="h-4 md:h-5 fill-pink-500"
               >
                 <path
                   d="M11 15.9339C7.33064 15.445 4.5 12.3031 4.5 8.5C4.5 4.35786 7.85786 1 12 1C16.1421 1 19.5 4.35786 19.5 8.5C19.5 12.3031 16.6694 15.445 13 15.9339V18H18V20H13V24H11V20H6V18H11V15.9339ZM12 14C15.0376 14 17.5 11.5376 17.5 8.5C17.5 5.46243 15.0376 3 12 3C8.96243 3 6.5 5.46243 6.5 8.5C6.5 11.5376 8.96243 14 12 14Z"
                 ></path>
               </svg>
-              <h2 class="text-xl">{{ pokemon.femelle }}</h2>
+              <h2 class="text-sm md:text-md">{{ pokemon.femelle }}</h2>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                class="h-8 fill-blue-500"
+                class="h-4 md:h-5 fill-blue-500"
               >
                 <path
                   d="M15.0491 8.53666L18.5858 5H14V3H22V11H20V6.41421L16.4633 9.95088C17.4274 11.2127 18 12.7895 18 14.5C18 18.6421 14.6421 22 10.5 22C6.35786 22 3 18.6421 3 14.5C3 10.3579 6.35786 7 10.5 7C12.2105 7 13.7873 7.57264 15.0491 8.53666ZM10.5 20C13.5376 20 16 17.5376 16 14.5C16 11.4624 13.5376 9 10.5 9C7.46243 9 5 11.4624 5 14.5C5 17.5376 7.46243 20 10.5 20Z"
                 ></path>
               </svg>
-
-              <h2 class="text-xl">{{ pokemon.male }}</h2>
+              <h2 class="text-sm md:text-md">{{ pokemon.male }}</h2>
             </div>
           </div>
         </div>
-        <div class="grid justify-items-center h-auto">
-          <NuxtImg
-            :src="pokemon.image.url"
-            :alt="pokemon.nom"
-            class="rounded-lg border-4"
-            :style="{ borderColor: pokemon.couleur.hex }"
-          />
-        </div>
-        <div class="flex justify-center text-center space-x-4">
-          <h3 class="font-semibold">Taille :</h3>
-          <p>{{ pokemon.taille }}m</p>
-          <h3 class="font-semibold">Poids :</h3>
 
-          <p>{{ pokemon.poids }}kg</p>
+        <div>
+          <h3 class="font-semibold">Taille : {{ pokemon.taille }}m</h3>
+          <h3 class="font-semibold">Poids : {{ pokemon.poids }}kg</h3>
         </div>
+        <p>{{ pokemon.description }}</p>
+      </div>
 
-        <p class="text-center">{{ pokemon.description }}</p>
-      </div>
-      <div v-else>
-        <li>Loading...</li>
-      </div>
-      <div class="row">
-        <div class="text-center space-x-4 py-8">
+      <div class="grid col-start-1 col-end-7 pt-8">
+        <div
+          class="flex flex-wrap justify-center md:justify-start space-x-2 md:space-x-4"
+        >
           <button
-            id="btn1"
-            class="text-xl font-semibold px-2 border-2 rounded-lg"
+            @click="setActiveTab('attaques')"
+            class="text-base md:text-xl font-semibold px-1 md:px-2 py-1 border-2 rounded-lg"
+            :class="{ 'bg-gray-200': activeTab === 'attaques' }"
             :style="{ borderColor: pokemon.couleur.hex }"
           >
             Attaques
           </button>
           <button
-            id="btn2"
-            class="text-xl font-semibold px-2 border-2 rounded-lg"
+            @click="setActiveTab('localisation')"
+            class="text-base md:text-xl font-semibold px-1 md:px-2 py-1 border-2 rounded-lg"
+            :class="{ 'bg-gray-200': activeTab === 'localisation' }"
             :style="{ borderColor: pokemon.couleur.hex }"
           >
             Localisation
           </button>
           <button
-            id="btn3"
-            class="text-xl font-semibold px-2 border-2 rounded-lg"
+            @click="setActiveTab('formes')"
+            class="text-base md:text-xl font-semibold px-1 md:px-2 py-1 border-2 rounded-lg"
+            :class="{ 'bg-gray-200': activeTab === 'formes' }"
             :style="{ borderColor: pokemon.couleur.hex }"
           >
             Formes
           </button>
         </div>
 
-        <div id="div1">
-          <div v-if="pokemon.attaques" class="p-4 xl:pr-24">
-            <h3 class="font-semibold text-2xl pb-4">Attaques :</h3>
-            <div>
-              <ul class="">
-                <li
-                  v-for="attaque in pokemon.attaques"
-                  :key="attaque.nom"
-                  class=""
-                >
-                  <div class="py-4">
+        <div v-if="activeTab === 'attaques'" class="animate-fade-in-down">
+          <div>
+            <ul class="pt-4">
+              <li
+                v-for="attaque in pokemon.attaques"
+                :key="attaque.nom"
+                class=""
+              >
+                <div class="py-4">
+                  <div
+                    class="border-l-2 pl-4"
+                    :style="{ borderColor: pokemon.couleur.hex }"
+                  >
                     <div
-                      class="border-l-2 pl-4"
-                      :style="{ borderColor: pokemon.couleur.hex }"
+                      class="flex space-x-4 items-center justify-between pr-4"
                     >
-                      <div
-                        class="flex space-x-4 items-center justify-between pr-4"
-                      >
-                        <p class="font-semibold text-lg">
-                          {{ attaque.nom }}
-                        </p>
-                        <p class="font-medium text-sm">
-                          Dégât
-                          {{ attaque.degat }}
-                        </p>
-                        <!-- <div
-                          class="border-2 h-12 w-24"
-                          :style="{
-                            borderColor: attaque.typePokemon.couleur.hex,
-                          }"
-                        ></div> -->
-                        <!-- <div v-if="attaque.typeAttaque" class="space-x-2">
-                          <NuxtImg
-                            :src="attaque.typePokemon.image.url"
-                            :alt="attaque.typePokemon.nom"
-                            class="h-[3rem]"
-                          />
-                        </div>
-                        <div v-else>
-                          <p>Pas d'image disponible</p>
-                        </div> -->
-                      </div>
-                      <p>
-                        {{ attaque.description }}
+                      <p class="font-semibold text-lg">
+                        {{ attaque.nom }}
+                      </p>
+                      <p class="font-medium text-sm">
+                        Dégât
+                        {{ attaque.degat }}
                       </p>
                     </div>
+                    <p>
+                      {{ attaque.description }}
+                    </p>
                   </div>
-                </li>
-              </ul>
-            </div>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
-        <div id="div2" class="hidden">
-          <div class="flex">
-            <div class="" v-if="pokemon.zoneMap">
-              <p class="font-semibold text-xl py-4">
-                {{ pokemon.zoneMap.nom }}
-              </p>
-              <NuxtImg
-                :src="pokemon.zoneMap.image.url"
-                :alt="pokemon.zoneMap.nom"
-                class="rounded-lg"
-              />
-            </div>
+        <div v-if="activeTab === 'localisation'" class="animate-fade-in-down">
+          <div
+            class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 pt-8 justify-around"
+          >
+            <p class="font-semibold text-lg self-center">
+              {{ pokemon.zoneMap.nom }}
+            </p>
+            <NuxtImg
+              :src="pokemon.zoneMap.image.url"
+              :alt="pokemon.zoneMap.nom"
+              class="rounded-lg"
+            />
           </div>
         </div>
-        <div id="div3" class="hidden">
-          <div class="flex" v-if="pokemon">
-            <div class="">
-              <NuxtImg
-                :src="pokemon.sprite.url"
-                :alt="pokemon.nom"
-                class="h-auto"
-              />
-              <p class="font-semibold">Basique</p>
-            </div>
-            <div class="">
-              <NuxtImg
-                :src="pokemon.shiny.url"
-                :alt="pokemon.nom"
-                class="h-auto"
-              />
-              <p class="font-semibold">Shiny</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 pt-8"
+        <div
+          v-if="activeTab === 'formes'"
+          class="flex space-x-4 animate-fade-in-down pt-8 justify-around"
         >
-          <div class="flex" v-if="pokemon">
-            <div class="">
-              <NuxtImg
-                :src="pokemon.sprite.url"
-                :alt="pokemon.nom"
-                class="h-auto"
-              />
-              <p class="font-semibold">Basique</p>
-            </div>
-            <div class="">
-              <NuxtImg
-                :src="pokemon.shiny.url"
-                :alt="pokemon.nom"
-                class="h-auto"
-              />
-              <p class="font-semibold">Shiny</p>
-            </div>
+          <div class="">
+            <p class="font-semibold text-lg">Basique</p>
+            <NuxtImg
+              :src="pokemon.sprite.url"
+              :alt="pokemon.nom"
+              class="w-64 h-auto"
+            />
           </div>
-        </div> -->
+          <div class="">
+            <p class="font-semibold text-lg">Shiny</p>
+            <NuxtImg
+              :src="pokemon.shiny.url"
+              :alt="pokemon.nom"
+              class="h-auto w-64"
+            />
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- <div class="flex justify-center py-4">
-      <div
-        class="rounded-lg inline-block1"
-        :style="{
-          width: '60vh',
-          height: '1rem',
-          backgroundColor: pokemon.couleur.hex,
-        }"
-      ></div>
-    </div> -->
+    <div v-else>
+      <p>Loading...</p>
+    </div>
   </div>
 </template>
+<style>
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s ease-out;
+}
+</style>

@@ -55,7 +55,7 @@ const query = gql`
       zoneMap {
         nom
         image {
-          url
+          url(transformation: { document: { output: { format: webp } } })
         }
       }
 
@@ -105,6 +105,7 @@ function setActiveTab(tabName) {
           :style="{ borderColor: pokemon.couleur.hex }"
         />
       </div>
+
       <div class="md:col-span-2 space-y-4">
         <div
           class="flex flex-col md:flex-row justify-between items-start md:items-center"
@@ -123,11 +124,11 @@ function setActiveTab(tabName) {
               />
             </div>
           </div>
-          <div class="flex justify-center block md:hidden w-80 h-auto py-4">
+          <div class="flex justify-center py-2 block md:hidden">
             <NuxtImg
               :src="pokemon.image.url"
               :alt="pokemon.nom"
-              class="rounded-lg border-4 object-cover"
+              class="rounded-lg border-4 max-w-full h-auto object-cover"
               :style="{ borderColor: pokemon.couleur.hex }"
             />
           </div>
@@ -199,11 +200,7 @@ function setActiveTab(tabName) {
         <div v-if="activeTab === 'attaques'" class="animate-fade-in-down">
           <div>
             <ul class="pt-4">
-              <li
-                v-for="attaque in pokemon.attaques"
-                :key="attaque.nom"
-                class=""
-              >
+              <li v-for="attaque in pokemon.attaques" :key="attaque.nom">
                 <div class="py-4">
                   <div
                     class="border-l-2 pl-4"
@@ -214,15 +211,35 @@ function setActiveTab(tabName) {
                     >
                       <p class="font-semibold text-lg">
                         {{ attaque.nom }}
+                        <span
+                          class="uppercase text-xs"
+                          :style="{ color: attaque.typePokemon.couleur.hex }"
+                          >{{ attaque.typePokemon.nom }}</span
+                        >
                       </p>
-                      <p class="font-medium text-sm">
-                        Dégât
-                        {{ attaque.degat }}
-                      </p>
+                      <div>
+                        <span
+                          v-if="attaque.typeAttaque"
+                          class="text-xs font-medium ml-2"
+                        >
+                          {{ attaque.typeAttaque.nom }}
+                        </span>
+                        <p class="font-medium text-sm">
+                          Dégât: {{ attaque.degat }}
+                        </p>
+                      </div>
                     </div>
-                    <p>
-                      {{ attaque.description }}
-                    </p>
+                    <div class="flex justify-between items-center">
+                      <p>
+                        {{ attaque.description }}
+                      </p>
+                      <!-- <img
+                        v-if="attaque.typeAttaque && attaque.typeAttaque.image"
+                        :src="attaque.typeAttaque.image.url"
+                        :alt="attaque.typeAttaque.nom"
+                        class="h-8 w-8 object-cover ml-2"
+                      /> -->
+                    </div>
                   </div>
                 </div>
               </li>

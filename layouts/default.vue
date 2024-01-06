@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen bg-[#F2F2F2] space-y-4">
+  <div class="bg-[#F2F2F2] space-y-4">
     <nav class="container mx-auto h-auto flex items-center justify-center">
       <NuxtLink to="/">
         <img src="/images/logo.png" class="h-32 items-center" />

@@ -81,15 +81,15 @@ const selectedSort = ref("id");
           v-model="searchTerm"
           id="searchBar"
           placeholder="Rechercher..."
-          class="rounded-lg shadow-lg"
+          class="rounded-lg shadow-lg px-2"
         />
 
-        <select v-model="selectedSort" class="rounded-lg shadow-lg">
+        <select v-model="selectedSort" class="rounded-lg shadow-lg px-2">
           <option value="id">Numéro Pokedex</option>
           <option value="alphabetical">Alphabétique</option>
         </select>
 
-        <select v-model="selectedType" class="rounded-lg shadow-lg">
+        <select v-model="selectedType" class="rounded-lg shadow-lg px-2">
           <option value="all">All</option>
           <option v-for="type in types" :value="type.nom">
             {{ type.nom }}
@@ -98,7 +98,7 @@ const selectedSort = ref("id");
       </div>
     </div>
 
-    <div class="pr-4 overflow-y-scroll">
+    <div class="pr-4">
       <ul
         v-if="filteredAndSortedPokemons"
         class="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8"
